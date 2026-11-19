@@ -2,12 +2,15 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
+from fastapi import Depends, FastAPI, Query, Response, status
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
-from app import crud
+from app import crud, web
 from app.database import Base, engine, get_db
+from app.dependencies import obter_tarefa_ou_404
 from app.models import StatusTarefa, Tarefa
 from app.schemas import Erro, TarefaAtualizar, TarefaCriar, TarefaLer
 
@@ -27,13 +30,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
-def obter_tarefa_ou_404(tarefa_id: int, db: Session = Depends(get_db)) -> Tarefa:
-    """Dependência reutilizada pelas rotas que operam sobre uma tarefa específica."""
-    tarefa = crud.obter_tarefa(db, tarefa_id)
-    if tarefa is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tarefa não encontrada")
-    return tarefa
+app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
+app.include_router(web.router)
 
 
 # --------------------------------------------------------------------------- #

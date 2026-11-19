@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}TechFlow Tasks{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <a href="/" class="marca">TechFlow <span>Tasks</span></a>
+    <a href="/docs" class="link-api">API (Swagger)</a>
+  </header>
+
+  <main class="conteudo">
+    {% if erros %}
+      <div class="alerta" role="alert">
+        <strong>Não foi possível salvar:</strong>
+        <ul>{% for erro in erros %}<li>{{ erro }}</li>{% endfor %}</ul>
+      </div>
+    {% endif %}
+
+    {% block conteudo %}{% endblock %}
+  </main>
+</body>
+</html>

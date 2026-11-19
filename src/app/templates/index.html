@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<section class="painel">
+  <h2>Nova tarefa</h2>
+  <form method="post" action="/tarefas" class="form-nova">
+    <input name="titulo" placeholder="Título (mín. 3 caracteres)" required minlength="3" maxlength="120">
+    <input name="responsavel" placeholder="Responsável" maxlength="80">
+    <input name="descricao" placeholder="Descrição" maxlength="1000">
+    <button type="submit">Adicionar</button>
+  </form>
+</section>
+
+<section class="quadro">
+  {% for status, tarefas in colunas.items() %}
+  <div class="coluna coluna-{{ status.value }}">
+    <h3>{{ status.rotulo }} <span class="contador">{{ tarefas | length }}</span></h3>
+
+    {% for tarefa in tarefas %}
+    <article class="card">
+      <h4>{{ tarefa.titulo }}</h4>
+      {% if tarefa.descricao %}<p>{{ tarefa.descricao }}</p>{% endif %}
+      {% if tarefa.responsavel %}<p class="responsavel">👤 {{ tarefa.responsavel }}</p>{% endif %}
+
+      <div class="acoes">
+        {# Botões para mover a tarefa para as outras colunas #}
+        {% for destino in status_lista if destino != status %}
+        <form method="post" action="/tarefas/{{ tarefa.id }}/status">
+          <input type="hidden" name="novo_status" value="{{ destino.value }}">
+          <button type="submit" class="secundario">→ {{ destino.rotulo }}</button>
+        </form>
+        {% endfor %}
+        <a href="/tarefas/{{ tarefa.id }}/editar" class="botao secundario">Editar</a>
+        <form method="post" action="/tarefas/{{ tarefa.id }}/excluir"
+              onsubmit="return confirm('Excluir esta tarefa?');">
+          <button type="submit" class="perigo">Excluir</button>
+        </form>
+      </div>
+    </article>
+    {% else %}
+    <p class="vazio">Nenhuma tarefa.</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

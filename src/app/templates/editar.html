@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar: {{ tarefa.titulo }} · TechFlow Tasks{% endblock %}
+
+{% block conteudo %}
+<section class="painel painel-estreito">
+  <h2>Editar tarefa #{{ tarefa.id }}</h2>
+  <form method="post" action="/tarefas/{{ tarefa.id }}/editar" class="form-edicao">
+    <label>Título
+      <input name="titulo" value="{{ tarefa.titulo }}" required minlength="3" maxlength="120">
+    </label>
+    <label>Responsável
+      <input name="responsavel" value="{{ tarefa.responsavel or '' }}" maxlength="80">
+    </label>
+    <label>Descrição
+      <textarea name="descricao" rows="4" maxlength="1000">{{ tarefa.descricao or '' }}</textarea>
+    </label>
+    <label>Status
+      <select name="status">
+        {% for s in status_lista %}
+        <option value="{{ s.value }}" {% if s == tarefa.status %}selected{% endif %}>{{ s.rotulo }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="acoes">
+      <button type="submit">Salvar</button>
+      <a href="/" class="botao secundario">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
